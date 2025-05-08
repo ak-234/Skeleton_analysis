@@ -1,5 +1,4 @@
-function [parent_rad,sumchild,strahler_murray] =murrays_law(filepath_ascii)
-
+function [B ,log_exponent_all] =Exponent_calculation(filepath_ascii)
 [edge_network,vert_network,point_network,edge, point,vertex]=ultimate_amira_read(filepath_ascii);
 
 %% Check and fix edges
@@ -31,34 +30,37 @@ s=edge_network.EdgeConnectivity_EDGE{1}(:,1);
          network=table([original_edges]);
          network.Properties.VariableNames= [{'edge_nodes'} ];
      end
+s2=network.edge_nodes(:,1);
+t2=network.edge_nodes(:,2);
+G_reverse=digraph(t2+1,s2+1);
+G_reverse.Nodes.Isterminal = G_reverse.outdegree == 0;
+figure
+plot(G_reverse, 'NodeCdata', G_reverse.Nodes.Isterminal+1,'Layout','layered');
 
 
 edges = unique(network.edge_nodes);
 counts = histc(network.edge_nodes(:), edges); %this is the co-ordination number
-idx = find(counts >= 3);  % find the branching point nodes
+idx = find(counts == 1);  % find the branching point nodes
 
-%edge_network.MeanRadius_EDGE{1}=edge_network.MeanRadius_EDGE{1}./max(edge_network.MeanRadius_EDGE{1});
+exponent_data=NaN([length(edges),2]);
 
-% source/child 1 target/parent 2
-branching_nodes=edges(idx);
-i=1;
-for i=1:length(branching_nodes)
-node=branching_nodes(i);
-ind=find(network.edge_nodes(:,2)==node);
-ind2=find(network.edge_nodes(:,1)==node);
+for i= 1:length(edges)
+    downstream=nearest(G_reverse,edges(i)+1,Inf);
+    %find the segment where that is 
+    ind2=find(network.edge_nodes(:,1)==edges(i));
+    rad=edge_network.MeanRadius_EDGE{1}(ind2);
+    %sum the number of terminal ends in the downstream each node check if each node's co-ordination number
+    ds_tips=sum(counts(downstream)==1);
 
-parent_rad_cubed(i)=edge_network.MeanRadius_EDGE{1}(ind2)^3;
-parent_rad(i)=edge_network.MeanRadius_EDGE{1}(ind2);
-strahler_murray(i)=edge_network.strahler_EDGE{1}(ind2);
-%children rads
-
-children=edge_network.MeanRadius_EDGE{1}(ind);
-sumchild_cubed(i)=sum(children.^3);
-sumchild(i)=sum(children);
-
-gamma_eff(i) = findEffectiveGamma(parent_rad,children);
-
-clear children ind ind2
+    exponent_data(i,:)=([ds_tips,rad]);
 end
-cc1_for_murray=vertcat(parent_rad,sumchild,strahler_murray,gamma_eff);
+
+exponent_data(exponent_data == 0) = NaN;
+
+log_exponent=log(exponent_data);
+log_exponent_all=vertcat(log_exponent_cc1,log_exponent_cc4,log_exponent_cc9);
+%% concaternate all the log exponent datasets now from the different connected components.
+
+[B,BINTR,BINTJM]=gmregress(log_exponent_all(:,1),log_exponent_all(:,2),0.05); 
+
 end
