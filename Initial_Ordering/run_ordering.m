@@ -2,8 +2,8 @@
 function [NetworkStrahlerOrder,NetworkTopoGen]=run_ordering(filepath_ascii,filepath_ascii_write)
 
 
-%filepath_ascii='Artery1_only.Spatial-Graph_Reduced.am';
-%filepath_ascii_write='Artery1_only.Spatial-Graph_Reduced2.am';
+%filepath_ascii="F:\labels_edo\labels\LADAF_2024_28\Cleaned_Skeleton\LADAF_2024_28_cropped_tree-files\LADAF_2024_28_left_tree.labels.Spatial-Graph.attributegraph.am";
+%filepath_ascii_write="F:\labels_edo\labels\LADAF_2024_28\Cleaned_Skeleton\LADAF_2024_28_cropped_tree-files\LADAF_2024_28_left_tree_ordered.labels.Spatial-Graph.am";
 
 %filepath_ascii='Shahrokh_Labels_In_Zoom_Region_50um_Reduced.Spatial-Graph.am';
 %filepath_ascii_write='Shahrokh_Labels_In_Zoom_Region_50um_Reduced.Spatial-Graph2.am';
@@ -36,7 +36,7 @@ function [NetworkStrahlerOrder,NetworkTopoGen]=run_ordering(filepath_ascii,filep
 
      corrected=0;
      update_root=0;
-     if size(rootIDs,1)>1
+     if size(rootIDs,1)>0
          corrected=1;
          prompt='input the correct Root_node ID'
 
@@ -129,7 +129,7 @@ disp('Reading in data');
 
 [fileID msg] = fopen(filepath_ascii, 'a+');
 fprintf(fileID,'\n');
-fprintf(fileID,'@8');
+fprintf(fileID,'@22');
 fprintf(fileID,'\n');
 fprintf(fileID,'%f\n',edge_nodes_strahler(:,3));
 %fprintf(fileID,'%f\n',strahler);
@@ -159,7 +159,7 @@ disp('Reading in data');
 
 [fileID msg] = fopen(filepath_ascii, 'a+');
 fprintf(fileID,'\n');
-fprintf(fileID,'@9');
+fprintf(fileID,'@23');
 fprintf(fileID,'\n');
 fprintf(fileID,'%f\n',edge_nodes_topo(:,3));
 fclose(fileID)

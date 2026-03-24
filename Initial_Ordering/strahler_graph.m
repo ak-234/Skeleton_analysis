@@ -1,5 +1,5 @@
 function [Strahler edge_nodes] = strahler_graph(subgraph,root_node_ID)
- %root_node=17;    % set the root node ID
+%root_node=164;    % set the root node ID
 % This block of code just takes the temp edge node, finds all the end
 % points, for each endpoint it checks if it is  (a root node-in which case
 % skip it, or if it has children it calls the find children function and
